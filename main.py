@@ -5,7 +5,7 @@ class Acao():
         self.acoes = []
         self.acionistas = [('Luis Felipe Nuns', 190, ['bb'], [112])]
         self.operacoesPendentes = [('Venda', 'bb', 1, 2, ('Luis Felipe Nuns', 190, ['bb'], [112])), ('Compra', 'bb', 1, 3, ('Luis Felipe Nuns', 190, ['bb'], [112]))]
-
+        self.operacoesAprovadas = []
     def cadastrarAcao(self):
         acaoNome = input('Nome da ação: ')
         acaoSigla = input('Sigla da ação: ')
@@ -79,14 +79,10 @@ class Acao():
     
     def validaTransacao(self):
         while self.operacoesPendentes:
-            print('OPERACOES NO MOMENTO: ', self.operacoesPendentes)
-
             operaco = self.operacoesPendentes.pop()
-
-            print('Ultima operacao', operaco)
+            aprovada = False
         
             tipoTransacao, acaoNegociada, quantidadeDeAcoes, precoDaAcao, quemCadastrou = operaco
-            print('ACIONISTAS ANTES: ', self.acionistas)
 
             if tipoTransacao == 'Compra':
                 print('TIPO IGUAL A COMPRA')
@@ -117,6 +113,7 @@ class Acao():
 
                 novosDadosDoAcionista = (acionistaNome, precoAcaodoAcionista, acionistaAcoes, acionistaQtdAcoes)
                 self.atualizarDadosAcionista(acionistaNome, novosDadosDoAcionista)
+                aprovada = True
 
             else:
                 acionistaNome, acionistaDinheiro, acionistaAcoes, acionistaQtdAcoes = self.retornaAcionista(quemCadastrou)
@@ -142,17 +139,29 @@ class Acao():
 
                     novosDadosDoAcionista = (acionistaNome, precoAcaodoAcionista, acionistaAcoes, acionistaQtdAcoes)
                     self.atualizarDadosAcionista(acionistaNome, novosDadosDoAcionista)
+                    aprovada = True
                 else:
                     print('Operação negada: transação negada.')
-
-            print('ACIONISTAS DEPOIS: ', self.acionistas)
-
-
-
+            
+            if aprovada: 
+                self.operacoesAprovadas.append(operaco)
         self.menu()
+   
     def listarAcoes(self): 
-        ...
+        acoesTotal = 0
+        precoTotal = 0
 
+        for operacao in self.operacoesAprovadas:
+            tipoTransacao, acaoNegociada, quantidadeDeAcoes, precoDaAcao, quemCadastrou = operacao
+
+            if tipoTransacao == 'Compra':
+                precoTotal += precoDaAcao
+                acoesTotal += quantidadeDeAcoes
+
+
+        print('Total Acões: ', acoesTotal)
+        print('Preço Acões: ', precoTotal)
+        self.menu()
     # 
     def verificaSeTemAcao(self, acaoCheck):
         
@@ -181,7 +190,12 @@ class Acao():
             if acionistaNome == nomeDoAcionista:
                 self.acionistas[i] = novosDados
 
-        
+    def atualizaDadosAcao(self, silgaAcaoCheck, novosDados):
+        for i, (acionistaNome, acionistaDinheiro, acionistaAcoes, acionistaQtdAcoes) in enumerate(self.acionistas):
+            if acionistaNome == silgaAcaoCheck:
+                self.acionistas[i] = novosDados
+        ...
+
     def menu(self):
         escolha = int(input('[1] - Cadastrar uma ação\n[2] - Cadastrar um acionista\n[3] - Cadastrar uma operação de compra ou venda de ações\n[4] - Efetivar transações\n[5] - Listar ações\n[6] - Encerrar programa\n-> '))
 
